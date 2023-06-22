@@ -1,0 +1,164 @@
+{{ 'customers-reviews.css' | asset_url | stylesheet_tag }}
+
+{%- liquid 
+    assign heading = section.settings.heading	
+-%}
+
+<section class="customers-reviews"
+    data-section-type="customers-reviews"
+    data-section-id="{{- section.id -}}"
+>
+    <div class="container customers-reviews__container">
+        <div class="customers-reviews__wrapper">
+            {%- if heading != blank -%}
+                <h2 class="customers-reviews__heading">{{- heading -}}</h2>
+            {%- endif -%}
+
+            <div class="swiper customers-reviews__slider" data-customers-reviews-slider>
+                <div class="swiper-wrapper customers-reviews__wrapper">
+                    {%- for block in section.blocks -%}
+                        {%- liquid 
+                            assign image = block.settings.image
+                            assign stars_count = block.settings.stars_count
+                            assign review_heading = block.settings.heading
+                            assign review_content = block.settings.review_content
+                            assign customer_name = block.settings.customer_name
+                            assign background_color = block.settings.background_color
+                            assign bottom_background_color = block.settings.bottom_background_color
+                            assign reviewed_product = block.settings.reviewed_product
+                        -%}
+
+                        {%- capture styles -%}
+                            --card-background-color: {{ background_color }};
+                            --card-bottom-background-color: {{ bottom_background_color }};
+                        {%- endcapture -%}
+
+                        <div class="swiper-slide customers-reviews__slide" style="{{ styles | escape }}">
+                            <div class="customers-reviews__slide-top">
+                                {%- if image != blank -%}
+                                    <picture>
+                                        <source srcset="{{- image | image_url: width:  70 }} 1x, {{ image | image_url: width:  140 }} 2x" media="(max-width: 767px)">
+                                        <source srcset="{{- image | image_url: width:  140 }} 1x, {{ image | image_url: width:  280 }} 2x" media="(max-width: 1920px)">
+
+                                        <img class="customers-reviews__image"
+                                            alt="{{- image.alt -}}"
+                                            src="{{- image | image_url: width:  140 -}}"
+                                            srcset="{{- image | image_url: width:  140 }} 1x, {{ image | image_url: width:  280 }} 2x"
+                                        />
+                                    </picture>
+                                {%- endif -%}
+
+                                <div class="customers-reviews__slide-stars">
+                                    {% for i in (1 .. stars_count) %}
+                                        {%- render "icon-star" -%}
+                                    {% endfor %}
+                                </div>
+
+                                <p class="customers-reviews__slide-heading">
+                                    {{- review_heading -}}
+                                </p>
+
+                                <p class="customers-reviews__slide-content">
+                                    {{- review_content -}}
+                                </p>
+
+                                <p class="customers-reviews__slide-author-name">{{- customer_name -}}</p>
+                            </div>
+                            {%- if reviewed_product != blank -%}
+                                <div class="customers-reviews__slide-bottom">
+                                    <a href="{{- reviewed_product -}}" class="customers-reviews__slide-product-link">
+                                        <img class="customers-reviews__slide-product-image"
+                                            src="{{ reviewed_product.images[0] | image_url: width: 92 }}"
+                                            alt="{{ reviewed_product.images[0].alt }}"
+                                        >
+
+                                        <span class="customers-reviews__slide-product-title"> {{- reviewed_product.title -}}</span>
+                                    </a>
+                                </div>
+                            {%- endif -%}
+                        </div>
+                    {%- endfor -%}
+                </div>
+
+                <button class="slider__arrow slider__arrow--prev js-slider-arrow-prev">
+                    {%- render 'icon-chevron' -%}
+                </button>
+
+                <button class="slider__arrow slider__arrow--next js-slider-arrow-next">
+                    {%- render 'icon-chevron' -%}
+                </button>
+                
+                <div class="swiper-pagination featured-products__slider-pagination" data-customers-reviews-slider-pagination></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% schema %}
+   {
+        "name": "customers-reviews",
+        "settings": [
+            {
+                "type": "text",
+                "id": "heading",
+                "label": "Heading",
+                "default": "Why People Love Us"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "customer-review",
+                "name": "Customer review",
+                "settings": [
+                    {
+                        "type": "product",
+                        "id": "reviewed_product",
+                        "label": "Product from review"
+                    },
+                    {
+                        "type": "color",
+                        "id": "background_color",
+                        "label": "Background color",
+                        "default": "#DFFFFD"
+                    },
+                    {
+                        "type": "color",
+                        "id": "bottom_background_color",
+                        "label": "Background color for bottom part",
+                        "default": "#00AFA9"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "image",
+                        "label": "Customer image"
+                    },
+                    {
+                        "type": "range",
+                        "id": "stars_count",
+                        "label": "Stars count",
+                        "min": 1,
+                        "max": 5,
+                        "step": 1,
+                        "default": 5
+                    },
+                    {
+                        "type": "text",
+                        "id": "heading",
+                        "label": "Review title",
+                        "default": "Customer review title"
+                    },
+                    {
+                        "type": "textarea",
+                        "id": "review_content",
+                        "label": "Review content"
+                    },
+                    {
+                        "type": "text",
+                        "id": "customer_name",
+                        "label": "Customer name"
+                    }
+                ]
+            }
+        ]
+   }
+{% endschema %}

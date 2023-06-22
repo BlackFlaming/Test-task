@@ -1,0 +1,201 @@
+{{ "featured-products.css" | asset_url | stylesheet_tag }}
+
+{%- liquid 
+    assign heading = section.settings.heading
+    assign description = section.settings.description
+    assign link = section.settings.link	
+-%}
+
+<section 
+    data-section-type="featured-products"
+    data-section-id="{{- section.id -}}"
+    class="featured-products"
+>
+   <div class="container featured-products__container">
+       <div class="featured-products__wrapper">
+            {%- if heading != blank -%}
+                <h2 class="featured-products__heading">
+                    {{- heading -}}
+                </h2>
+            {%- endif -%}
+            
+            {%- if description != blank -%}
+                <p class="featured-products__description">
+                    {{- description -}}
+                </p>   
+            {%- endif -%}
+
+            <div class="swiper featured-products__slider" data-featured-products-slider>
+                <div class="swiper-wrapper featured-products__slider-wrapper">
+                    {%- for block in section.blocks -%}
+                        {%- liquid 
+                            assign block_product = block.settings.product
+                            assign image = block_product.images[0]
+                            assign custom_price_data = block.settings.custom_price_data
+                            assign hover_color = block.settings.color_on_hover
+                            assign badges_color = block.settings.badges_color
+                            assign first_icon = block.settings.first_icon
+                            assign first_text = block.settings.first_text
+                            assign second_icon = block.settings.second_icon
+                            assign second_text = block.settings.second_text
+                            assign title = block.settings.title | default: block_product.title
+                            assign price = block_product.price
+                        -%}
+
+                        {%- capture badges -%}
+                            {%- if first_icon != blank and first_text != blank -%}
+                                <div class="featured-products__item-badge">
+                                    {{- first_icon -}} <p class="featured-products__item-badge-text">{{- first_text -}}</p>
+                                </div>
+                            {%- endif -%}
+                            {%- if second_icon != blank and second_text != blank -%}
+                                <div class="featured-products__item-badge">
+                                    {{- second_icon -}} <p class="featured-products__item-badge-text">{{- second_text -}}</p>
+                                </div>
+                            {%- endif -%}
+                        {%- endcapture -%}
+
+                        {%- capture styles -%}
+                            --card-hover-color: {{ hover_color }};
+                            --card-badges-color: {{ badges_color }};
+                        {%- endcapture -%}
+
+                        <div class="swiper-slide featured-products__slider-item" style="{{- styles | escape -}}">
+                            <div class="featured-products__slider-item-top">
+                                {%- if custom_price_data != blank -%}
+                                    <p class="featured-products__item-custom-tag">
+                                        {{- custom_price_data -}} <span class="featured-products__item-tag-small">/day</span>
+                                    </p>
+                                {%- endif -%}
+                                <a href="{{- block_product.url -}}" class="featured-products__item-image-wrapper">
+                                    <picture>
+                                        <img class="featured-products__slider-item-image"
+                                            src="{{ image | image_url: width: 270 }}"
+                                            srcset="{{ image | image_url: width: 270 }} 1x, {{ image | image_url: width: 540 }} 2x"
+                                            alt="{{- image.alt -}}"   
+                                        >
+                                    </picture>
+                                </a>
+
+                                {%- if badges != blank -%}
+                                    <div class="featured-products__item-badges-wrapper">
+                                        {{- badges -}}
+                                    </div>
+                                {%- endif -%}
+                            </div>
+
+                            <div class="featured-products__slider-item-bottom">
+                                <a href="{{- block_product.url -}}" class="featured-products__slider-item-title">{{- title -}}</a>
+                                <p class="featured-products__slider-item-price">{{- price | money -}}</p>
+                            </div>
+                        </div>
+                    {%- endfor -%}
+                </div>
+
+                <div class="swiper-pagination featured-products__slider-pagination">
+
+                </div>
+            </div>
+
+            {%- if link != blank -%}
+                <a href="{{ link }}" class="featured-products__link">
+                    See All Products
+                </a>
+            {%- endif -%}
+        </div>
+   </div>
+</section>
+{% schema %}
+   {
+        "name": "featured-products",
+        "settings": [
+            {
+                "type": "text",
+                "id": "heading",
+                "label": "Heading",
+                "default": "Have you had your daily dose of vit today?"
+            },
+            {
+                "type": "textarea",
+                "id": "description",
+                "label": "Description",
+                "default": "Whether you need a daily pick-me up or a little sleep support, our products are developed with the end goal in mind. Optimally-dosed, highly bioavailable formulas means you can see and feel results that set you on a path to better health."
+            },
+            {
+                "type": "url",
+                "id": "link",
+                "label": "Link to collection",
+                "default": "/collections/all"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "slider_item",
+                "name": "Slider item",
+                "settings": [
+                    {
+                        "type": "product",
+                        "id": "product",
+                        "label": "Product"
+                    },
+                    {
+                        "type": "text",
+                        "id": "custom_price_data",
+                        "label": "Custom price as tag"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "image",
+                        "label": "Image"
+                    },
+                    {
+                        "type": "color",
+                        "id": "color_on_hover",
+                        "label": "Color on hover",
+                        "default": "#FFF9C0"
+                    },
+                    {
+                        "type": "color",
+                        "id": "badges_color",
+                        "label": "Color for badges",
+                        "default": "#D7D2CC"
+                    },
+                    {
+                        "type": "header",
+                        "content": "First custom tag"
+                    },
+                    {
+                        "type": "html",
+                        "id": "first_icon",
+                        "label": "Badge Icon"
+                    },
+                    {
+                        "type": "text",
+                        "id": "first_text",
+                        "label": "Badge text"
+                    },
+                    {
+                        "type": "header",
+                        "content": "Second custom tag"
+                    },
+                    {
+                        "type": "html",
+                        "id": "second_icon",
+                        "label": "Badge Icon"
+                    },
+                    {
+                        "type": "text",
+                        "id": "second_text",
+                        "label": "Badge text"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "title",
+                        "default": "Product title"
+                    }
+                ]
+            }
+        ]
+   }
+{% endschema %}

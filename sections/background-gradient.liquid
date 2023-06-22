@@ -1,0 +1,21 @@
+{{ "background-gradient.css" | asset_url | stylesheet_tag }}
+
+{%- capture styles -%}
+    --section-gradient: {{section.settings.background}};
+{%- endcapture -%}
+
+<section class="background-gradient" style="{{styles | escape}}">
+</section>
+{% schema %}
+   {
+        "name": "background-gradient",
+        "settings": [
+            {
+                "type": "color_background",
+                "id": "background",
+                "label": "Background",
+                "default": "radial-gradient(50% 50.00% at 50% 50.00%, rgba(0, 175, 169, 0.30) 0%, rgba(255, 255, 255, 0.00) 100%)"
+            }
+        ]
+   }
+{% endschema %}
